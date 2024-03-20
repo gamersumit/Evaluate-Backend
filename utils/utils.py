@@ -1,4 +1,5 @@
 
+import random
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 import re
@@ -32,30 +33,38 @@ class AccountUtils :
         return make_password(value)    # return hashed password
     
     @staticmethod
-    def sendLink(user, subject, message): 
-        try :     
-            send_mail(
-                subject, 
-                message,
-                settings.EMAIL_HOST_USER,
-                user.email,
-                fail_silently=False 
-                )
-            
-            return True
+    def otp_generator():
+        otp = random.randint(100001, 999999)
+        return otp
     
-        except Exception as e :
-            raise Exception(str(e))
+
+class Mail:
+    
+    def __init__(self, subject, body, emails):
+        self.subject = subject
+        self.body = body
+        self.emails = emails # list
+    
+    
+    def send(self):
+        print('mail')
+        print(self.emails)
+        send_mail(
+            self.subject, 
+            self.body,
+            settings.EMAIL_HOST_USER,
+            self.emails,
+            fail_silently=False)
+    
+
 
 class CommonUtils :
-    @staticmethod
-    def base64_to_image(base64_image, image_name):
-        try :
-            format, imgstr = base64_image.split(';base64,') 
-            ext = format.split('/')[-1] 
-            image = ContentFile(base64.b64decode(imgstr), name=image_name+'.' + ext)
-            return image
-       
-        except :
-            return None 
+    @staticmethod  
+    def SerializerCreate(data, serializer_class):
+        serializer = serializer_class(data = data)
+        serializer.is_valid(raise_exception = True)
+        return serializer
+          
+    
+
         

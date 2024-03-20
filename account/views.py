@@ -1,10 +1,11 @@
 
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 from .serializers import *
 from .models import User
+from .service import AccountService
 from rest_framework.authtoken.models import Token
-from utils.utils import CommonUtils, AccountUtils
+from utils.utils import AccountUtils, CommonUtils, Mail
 import random
 # Create your views here.
 
@@ -12,8 +13,25 @@ class RegisterView(generics.CreateAPIView) :
     queryset = User.objects.all()
     serializer_class = StudentUserSerializer
 
-
-
+    def post(self, request):
+        try:
+            if AccountService.IsEmailExist(request.data['email']):
+                return Response({'message' : 'email already exists'}, status=status.HTTP_403_FORBIDDEN)
+            
+            # register user
+            serializer = CommonUtils.SerializerCreate(data = request.data, serializer_class=self.serializer_class)
+            user = serializer.save()    
+            # generate otp for mail verification and save it to database
+            otp  = AccountService.get_otp_for_mail_verification(user)
+            
+            # send mail verification otp
+            Mail(subject = 'Email Verification Mail', body = f'OTP : {otp}', emails=[request.data['email']]).send()
+            
+            return Response({'message' : 'User Registered Successfully'}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            print(str(e))
+            return Response({'message' : str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 

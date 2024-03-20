@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import MailVerificationOTP, User
 from utils.utils import AccountUtils
 
 
@@ -34,3 +34,11 @@ class TeacherUserDetailSerailizer(serializers.ModelSerializer):
 
     def validate_is_teacher(self, value):
         return True
+
+
+class MailVerificationOTPSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = MailVerificationOTP
+        fields = '__all__'
+        read_only_fields = ['id', 'updated_at']
