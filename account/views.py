@@ -34,9 +34,17 @@ class RegisterView(generics.CreateAPIView) :
             return Response({'message' : str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
+class VerifyMailView(generics.GenericAPIView):
+    def post(self, request):
+        try :
+            otp = request.data['otp']
+            email = request.data['email']
+            AccountService.verify_mail(otp = otp, email = email)
+            return Response({'message' : 'Verification Succesful'}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({'message' : str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
 # class SendVerificationEmailView(generics.GenericAPIView) :
 #     http_method_names = ['GET']
 
