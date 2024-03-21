@@ -27,3 +27,8 @@ class MailVerificationOTP(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     otp = models.PositiveIntegerField(null=True, blank=False)
     updated_at = models.DateTimeField(auto_now=True)
+    
+class ForgotPasswordOTP(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
+    otp = models.PositiveIntegerField(null=True, blank=False)
+    updated_at = models.DateTimeField(auto_now=True)

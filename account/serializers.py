@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MailVerificationOTP, User
+from .models import *
 from utils.utils import AccountUtils
 
 
@@ -40,5 +40,12 @@ class MailVerificationOTPSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = MailVerificationOTP
+        fields = '__all__'
+        read_only_fields = ['id', 'updated_at']
+        
+class ForgotPasswordOTPSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = ForgotPasswordOTP
         fields = '__all__'
         read_only_fields = ['id', 'updated_at']
