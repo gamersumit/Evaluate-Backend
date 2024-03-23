@@ -1,9 +1,8 @@
-
+import random
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 import re
-import base64
-from django.core.files.base import ContentFile
+from rest_framework.authtoken.models import Token
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -32,30 +31,57 @@ class AccountUtils :
         return make_password(value)    # return hashed password
     
     @staticmethod
-    def sendLink(user, subject, message): 
-        try :     
-            send_mail(
-                subject, 
-                message,
-                settings.EMAIL_HOST_USER,
-                user.email,
-                fail_silently=False 
-                )
-            
-            return True
-    
+    def getUserFromToken(token):
+        try :
+            token = Token.objects.get(key = token)
+            user = token.user
+            return user
+        
         except Exception as e :
             raise Exception(str(e))
+    
+    @staticmethod
+    def otp_generator():
+        otp = random.randint(100001, 999999)
+        return otp
+    
+
+class MailUtils:
+    
+    def __init__(self, subject, body, emails):
+        self.subject = subject
+        self.body = body
+        self.emails = emails # list
+        
+    @staticmethod
+    def SendVerificationMail(otp, user):
+        MailUtils(subject = 'Evaluate Email Verification', body = f'Hiii {user.username}\n\n      {otp}\n\nOTP will expire after 5minutes\nThankyou', emails=[user.email]).send()
+    
+    
+    def send(self):
+        print('mail')
+        print(self.emails)
+        send_mail(
+            self.subject, 
+            self.body,
+            settings.EMAIL_HOST_USER,
+            self.emails,
+            fail_silently=False)
+    
+
 
 class CommonUtils :
-    @staticmethod
-    def base64_to_image(base64_image, image_name):
-        try :
-            format, imgstr = base64_image.split(';base64,') 
-            ext = format.split('/')[-1] 
-            image = ContentFile(base64.b64decode(imgstr), name=image_name+'.' + ext)
-            return image
-       
-        except :
-            return None 
+    @staticmethod  
+    def SerializerCreate(data, serializer_class):
+        serializer = serializer_class(data = data)
+        serializer.is_valid(raise_exception = True)
+        return serializer
+    
+    def SerializerUpdate(user, data, serializer_class):
+        serializer = serializer_class(user, data = data, partial = True)
+        serializer.is_valid(raise_exception = True)
+        return serializer
+          
+    
+
         
