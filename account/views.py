@@ -141,7 +141,14 @@ class ResetPasswordView(generics.GenericAPIView):
             user = AccountUtils.getUserFromToken(request.headers['Authorization'].split(" ")[1])
             data = {'password' : request.data['password']}
             CommonUtils.SerializerUpdate(user, data=data, serializer_class=StudentUserSerializer).save()
-            return Response({'message' : 'password reset successfully'}, status = 200)
+            return Response({'message' : 'password reset successfully'}, status = status.HTTP_200_OK)
         
         except Exception as e:
-            return Response({'message': str(e)}, status = 400)
+            return Response({'message': str(e)}, status = status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyTokenView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({'message' : 'Verified User'}, status= status.HTTP_200_OK)
