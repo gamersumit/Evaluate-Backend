@@ -3,10 +3,10 @@ from venv import create
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .serializers import *
-from .models import ForgetPasswordOTP, User
+from .models import ForgotPasswordOTP, User
 from .service import AccountService
 from rest_framework.authtoken.models import Token
-from utils.utils import AccountUtils, CommonUtils, Mail, MailUtils
+from utils.utils import AccountUtils, CommonUtils, MailUtils
 import random
 from rest_framework.permissions import IsAuthenticated
 # Create your views here.
@@ -47,6 +47,7 @@ class RegisterView(generics.CreateAPIView) :
 class VerifyMailView(generics.GenericAPIView):
     def post(self, request):
         try :
+            
             otp = request.data['otp']
             email = request.data['email']
             
@@ -66,14 +67,16 @@ class LoginView(generics.GenericAPIView) :
     serializer_class = StudentUserSerializer
     def post(self, request, *args, **kwargs) :
         try :
+            print(request.data)
             email = request.data['email']
             password = request.data['password']       
 
             try :
                 user, token = AccountService.login_user(email = email, password = password)
-                Response({'message' : {'token' : token, 'is_teacher' : user.is_teacher}}, status=status.HTTP_200_OK)
+                return Response({'message' : {'token' : str(token), 'is_teacher' : user.is_teacher}}, status=status.HTTP_200_OK)
             
             except Exception as e:
+                print(str(e))
                 return Response({'message' : str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         except :
