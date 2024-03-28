@@ -103,7 +103,9 @@ class SendPasswordResetOTPView(generics.CreateAPIView):
                 raise Exception('Invalid email')
             
             user = User.objects.get(email = email)
-            
+
+            if not user.is_verified :
+                raise Exception('Invalid email')
             # generate otp for mail verification and save it to database
             otp  = AccountService.create_forgot_password_otp(email)
             
@@ -118,17 +120,22 @@ class SendPasswordResetOTPView(generics.CreateAPIView):
 class VerifyResetPasswordOTPView(generics.GenericAPIView):
     def post(self, request):
         try :
+            print(request.data)
             otp = request.data['otp']
             email = request.data['email']
             
             try : 
+               print("tyring")
                user = AccountService.verify_reset_password_otp(otp = otp, email = email)
+               print(user)
                token, created = Token.objects.get_or_create(user=user) 
+               print(token, created)
                
             except Exception as e :
                 return Response({'message' : str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
             
-            return Response({'message' : {'token' : token}}, status=status.HTTP_200_OK)
+            
+            return Response({'message' : {'token' : str(token)}}, status=status.HTTP_200_OK)
         
         except Exception as e:
             return Response({'message' : 'something went wrong'}, status=status.HTTP_400_BAD_REQUEST)

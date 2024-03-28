@@ -81,8 +81,8 @@ class CommonUtils :
         serializer.is_valid(raise_exception = True)
         return serializer
     
-    def SerializerUpdate(user, data, serializer_class):
-        serializer = serializer_class(user, data = data, partial = True)
+    def SerializerUpdate(obj, data, serializer_class):
+        serializer = serializer_class(obj, data = data, partial = True)
         serializer.is_valid(raise_exception = True)
         return serializer
           

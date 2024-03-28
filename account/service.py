@@ -51,21 +51,28 @@ class AccountService :
       
       if obj.otp != int(otp):
           raise Exception('incorrect otp')  
-        
+
+      obj.delete()  
       user.is_verified = True
       user.save()
       
   @staticmethod
   def verify_reset_password_otp(otp, email):
+      print('verifying...')
       if not AccountService.IsEmailExist(email):
         raise Exception('mail not found')
       
+      print('email found')
       user = User.objects.get(email = email)
+      print('user')
       
       if not ForgotPasswordOTP.objects.filter(user = user.id).exists():
+          print('obj not found')
           raise Exception('try resending otp')
       
+      print('obj exists ..getting ..')
       obj = ForgotPasswordOTP.objects.get(user = user.id)
+      print(obj)
       
       five_minutes_ago = timezone.now() - timezone.timedelta(minutes=5)
           
@@ -74,7 +81,8 @@ class AccountService :
       
       if obj.otp != int(otp):
           raise Exception('incorrect otp')  
-      
+      print('deleting ...')
+      obj.delete()
       return user  
      
           
@@ -101,14 +109,15 @@ class AccountService :
     otp = AccountUtils.otp_generator()
     data = {'otp' : otp, 'user' : user.id}
     
+    print('creating ...')
     if ForgotPasswordOTP.objects.filter(user = user.id).exists():
         otp = ForgotPasswordOTP.objects.get(user = user.id)
         CommonUtils.SerializerUpdate(obj = otp, data=data, serializer_class=ForgotPasswordOTPSerializer).save()
 
     else :  
-      CommonUtils.SerializerCreate(data=data, serializer_class =ForgotPasswordOTPSerializer).save()
+      otp = CommonUtils.SerializerCreate(data=data, serializer_class =ForgotPasswordOTPSerializer).save()
     
-    return otp
+    return otp.otp
   
       
     

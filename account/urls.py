@@ -10,5 +10,6 @@ urlpatterns = [
     path('login/', views.LoginView.as_view(), name = 'login'),
     path('token/verify/', views.VerifyTokenView.as_view(), name = 'token-verify'),
     path('send/otp/reset-password/', views.SendPasswordResetOTPView.as_view(), name = 'send-otp-for-password-reset'),
-    path('verify/otp/reset-password/', views.VerifyResetPasswordOTPView.as_view(), name = 'verify-otp-for-password-reset')
+    path('verify/otp/reset-password/', views.VerifyResetPasswordOTPView.as_view(), name = 'verify-otp-for-password-reset'),
+    path('reset-password/', views.ResetPasswordView.as_view(), name = 'password-reset')
 ]
