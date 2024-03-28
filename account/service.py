@@ -20,14 +20,15 @@ class AccountService :
       
       if MailVerificationOTP.objects.filter(user = user.id).exists():
          otp = MailVerificationOTP.objects.get(user = user.id)
-         CommonUtils.SerializerUpdate(obj = otp, data=data, serializer_class=MailVerificationOTPSerializer).save()
-      
+         otp = CommonUtils.SerializerUpdate(otp, data=data, serializer_class=MailVerificationOTPSerializer).save()
+
       else :  
-        CommonUtils.SerializerCreate(data=data, serializer_class = MailVerificationOTPSerializer).save()
+        otp = CommonUtils.SerializerCreate(data=data, serializer_class = MailVerificationOTPSerializer).save()
       
-      return otp
+      return otp.otp
     
     except Exception as e:
+      print(str(e))
       raise Exception('Unexpected error occured while generating otp')
     
   
@@ -88,7 +89,7 @@ class AccountService :
       raise Exception('Incorrect Password')
     
     if not user.is_verified :
-      raise Exception('Non verified User')
+      raise Exception('Invalid Email')
     
     token, created = Token.objects.get_or_create(user=user)
     return user, token

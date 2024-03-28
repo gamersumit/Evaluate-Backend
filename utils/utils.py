@@ -55,12 +55,16 @@ class MailUtils:
         
     @staticmethod
     def SendVerificationMail(otp, user):
-        MailUtils(subject = 'Evaluate Email Verification', body = f'Hiii {user.username}\n\n      {otp}\n\nOTP will expire after 5minutes\nThankyou', emails=[user.email]).send()
+        MailUtils(subject = 'Evaluate Email Verification', body = f'Hii  {user.username},\n\n\n\nYour OTP:   {otp}\n\nOTP will expire after 5minutes.\n\nThankyou', emails=[user.email]).send()
+    
+    def SendForgotPasswordOTPMail(otp, user):
+        MailUtils(subject = 'Password Reset Mail', body = f'Hii  {user.username},\n\n\n\nYour OTP:   {otp}\n\nOTP will expire after 5minutes.\n\nThankyou', emails=[user.email]).send()
     
     
     def send(self):
-        print('mail')
-        print(self.emails)
+        print('sending mail')
+        print('to: ', self.emails)
+        print('from: ', settings.EMAIL_HOST_USER)
         send_mail(
             self.subject, 
             self.body,

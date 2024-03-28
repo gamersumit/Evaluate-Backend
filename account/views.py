@@ -27,21 +27,20 @@ class RegisterView(generics.CreateAPIView) :
             
             
             if user.is_verified:
-                return Response({'message' : 'email already exists'}, status=status.HTTP_403_FORBIDDEN)
+                return Response({'message' : 'email already exists'}, status = status.HTTP_403_FORBIDDEN)
 
             
             CommonUtils.SerializerUpdate(user, data = request.data, serializer_class=self.serializer_class).save()
          
             # generate otp for mail verification and save it to database
             otp  = AccountService.get_otp_for_mail_verification(user)
-            
             # send mail verification otp
             MailUtils.SendVerificationMail(otp, user)
-            
             return Response({'message' : 'OTP SENT'}, status=status.HTTP_200_OK)
         
         except Exception as e:
-            return Response({'message' : str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            print(str(e))
+            return Response({'message' : 'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyMailView(generics.GenericAPIView):
@@ -104,11 +103,12 @@ class SendPasswordResetOTPView(generics.CreateAPIView):
                 raise Exception('Invalid email')
             
             user = User.objects.get(email = email)
+            
             # generate otp for mail verification and save it to database
-            otp  = AccountService.get_otp_for_mail_verification(user)
+            otp  = AccountService.create_forgot_password_otp(email)
             
             # send mail verification otp
-            MailUtils.SendVerificationMail(otp, user)
+            MailUtils.SendForgotPasswordOTPMail(otp, user)
             
             return Response({'message' : 'OTP SENT'}, status=status.HTTP_200_OK)
         
