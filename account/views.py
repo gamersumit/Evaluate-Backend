@@ -7,16 +7,22 @@ from .models import ForgotPasswordOTP, User
 from .service import AccountService
 from rest_framework.authtoken.models import Token
 from utils.utils import AccountUtils, CommonUtils, MailUtils
-import random
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.views import LogoutView as DRFLogoutView
+from drf_yasg.utils import swagger_auto_schema
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView) :
     queryset = User.objects.all()
     serializer_class = StudentUserSerializer
 
+    @swagger_auto_schema(
+        operation_summary = 'Register Student',
+        operation_description='Register with your email and password which is securely managed',
+        )
     def post(self, request):
         try:
+            raise Exception('Testing')
             email = request.data['email']
             if AccountService.IsEmailExist(email):
                 user = User.objects.get(email=email)
@@ -44,9 +50,11 @@ class RegisterView(generics.CreateAPIView) :
 
 
 class VerifyMailView(generics.GenericAPIView):
+    @swagger_auto_schema(
+        operation_summary = 'Verify Mail',
+        )
     def post(self, request):
         try :
-            
             otp = request.data['otp']
             email = request.data['email']
             
@@ -64,6 +72,10 @@ class VerifyMailView(generics.GenericAPIView):
 
 class LoginView(generics.GenericAPIView) :
     serializer_class = StudentUserSerializer
+    
+    @swagger_auto_schema(
+        operation_summary = 'Login User',
+        )
     def post(self, request, *args, **kwargs) :
         try :
             print(request.data)
@@ -96,6 +108,9 @@ class SendPasswordResetOTPView(generics.CreateAPIView):
     serializer_class = ForgotPasswordOTPSerializer
     queryset = ForgotPasswordOTP.objects.all()
     
+    @swagger_auto_schema(
+        operation_summary = 'Send OTP for password resetting',
+        )
     def post(self, request):
         try:
             email = request.data['email']
@@ -118,6 +133,9 @@ class SendPasswordResetOTPView(generics.CreateAPIView):
             return Response({'message' : str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 class VerifyResetPasswordOTPView(generics.GenericAPIView):
+    @swagger_auto_schema(
+        operation_summary = 'Verify OTP for password resetting',
+        )
     def post(self, request):
         try :
             print(request.data)
@@ -143,6 +161,9 @@ class VerifyResetPasswordOTPView(generics.GenericAPIView):
 class ResetPasswordView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     
+    @swagger_auto_schema(
+        operation_summary = 'Reset Password',
+        )
     def post(self, request):
         try :
             user = AccountUtils.getUserFromToken(request.headers['Authorization'].split(" ")[1])
@@ -156,6 +177,23 @@ class ResetPasswordView(generics.GenericAPIView):
 
 class VerifyTokenView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
-
+    @swagger_auto_schema(
+        operation_summary = 'Verify Token',
+        tags=['Token'],
+        )
     def get(self, request):
         return Response({'message' : 'Verified User'}, status= status.HTTP_200_OK)
+
+
+
+
+class PatchLogoutView(DRFLogoutView):
+    """
+    Djano 5 does not have GET logout route anymore, so Django Rest Framework UI can't log out.
+    This is a workaround until Django Rest Framework implements POST logout.
+    Details: https://github.com/encode/django-rest-framework/issues/9206
+    """
+    http_method_names = ["get", "post", "options"]
+
+    def get(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)

@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     # third party apps
     'rest_framework',
     'rest_framework.authtoken',
-
+    'drf_yasg',
+    
+    
     # project apps
     'account',
 ]
@@ -142,7 +144,10 @@ AUTH_USER_MODEL = 'account.User'
 # rest framework
 REST_FRAMEWORK = {
     
+    # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
 
@@ -154,6 +159,26 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 8
 
 }
+
+SWAGGER_SETTINGS = {
+    'REFETCH_SCHEMA_WITH_AUTH': True,
+    'REFETCH_SCHEMA_ON_LOGOUT' : True,
+    'DISPLAY_OPERATION_ID' : False,
+    # 'OPERATIONS_SORTER' : 'method',
+    # 'TAGS_SORTER': 'alpha',
+    'DEFAULT_API_URL': None,
+    'LOGIN_URL' : 'rest_framework:login',
+    'LOGOUT_URL' : 'rest_framework:logout',
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization (must append Keyword "Token")'
+        }
+    },
+    
+}
+
 
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
 EMAIL_HOST = os.getenv('EMAIL_HOST')
