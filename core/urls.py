@@ -26,6 +26,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Mock Test APIs",
         default_version="v1",
+        description="!!  Authorization: Token **************",
     ),
     public = False, # shows views which can be accessed by current user
     # permission_classes= [permissions.IsAuthenticated],
