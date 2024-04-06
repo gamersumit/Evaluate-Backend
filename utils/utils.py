@@ -3,8 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 import re
 from rest_framework.authtoken.models import Token
-from django.core.mail import send_mail
-from django.conf import settings
+
 
 class AccountUtils :
 

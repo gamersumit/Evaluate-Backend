@@ -20,6 +20,7 @@ class RegisterView(generics.CreateAPIView) :
         operation_summary = 'Register Student',
         operation_description='Register with your email and password which is securely managed',
         )
+        
     def post(self, request):
         try:
             raise Exception('Testing')
@@ -47,6 +48,7 @@ class RegisterView(generics.CreateAPIView) :
         except Exception as e:
             print(str(e))
             return Response({'message' : 'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class VerifyMailView(generics.GenericAPIView):

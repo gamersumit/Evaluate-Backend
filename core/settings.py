@@ -18,7 +18,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -144,8 +143,6 @@ AUTH_USER_MODEL = 'account.User'
 # rest framework
 REST_FRAMEWORK = {
     
-    # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    
     "DEFAULT_AUTHENTICATION_CLASSES": [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
@@ -170,10 +167,10 @@ SWAGGER_SETTINGS = {
     'LOGIN_URL' : 'rest_framework:login',
     'LOGOUT_URL' : 'rest_framework:logout',
     'SECURITY_DEFINITIONS': {
-        'api_key': {
+        'Token': {
             'type': 'apiKey',
             'in': 'header',
-            'name': 'Authorization (must append Keyword "Token")'
+            'name': 'Authorization'
         }
     },
     
